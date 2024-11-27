@@ -1,0 +1,21 @@
+version: "3.8"
+services:
+  crm-gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: crmgateway
+    ports:
+      - "${SERVER_PORT}:${SERVER_PORT}"
+    env_file:
+      - .env
+    environment:
+      SERVER_PORT: ${SERVER_PORT}
+      ALLOWED_GROUP_NAMES: ${ALLOWED_GROUP_NAMES}
+      AZURE_AD_ENABLED: ${AZURE_AD_ENABLED}
+      AZURE_TENANT_ID: ${AZURE_TENANT_ID}
+      AZURE_CLIENT_ID: ${AZURE_CLIENT_ID}
+      AZURE_CLIENT_SECRET: ${AZURE_CLIENT_SECRET}
+      AZURE_APP_ID_URI: ${AZURE_APP_ID_URI}
+      MESSAGE_SERVICE_ROUTE: ${MESSAGE_SERVICE_ROUTE}
+      CONTACT_SERVICE_ROUTE: ${CONTACT_SERVICE_ROUTE}

@@ -1,1 +1,66 @@
-spring.application.name=crmgateway
+server:
+  port: ${SERVER_PORT:8080}
+  forward-headers-strategy: native
+
+spring:
+  application:
+    name: crmgateway
+  web:
+    resources:
+      add-mappings: false
+
+  cloud:
+    azure:
+      active-directory:
+        user-group:
+          allowed-group-names: ${ALLOWED_GROUP_NAMES:group1}
+        enabled: ${AZURE_AD_ENABLED:true}
+        profile:
+          tenant-id: ${AZURE_TENANT_ID}
+        credential:
+          client-id: ${AZURE_CLIENT_ID}
+          client-secret: ${AZURE_CLIENT_SECRET}
+        app-id-uri: ${AZURE_APP_ID_URI}
+        application-type: web_application
+        authorization-clients:
+          graph:
+            authorization-grant-type: authorization_code
+            scopes:
+              - openid
+              - profile
+              - User.Read
+    gateway:
+      routes:
+        - id: message-service
+          uri: ${MESSAGE_SERVICE_ROUTE:http://localhost:8081}
+          predicates:
+            - Path=/api/v1/conversation/**, /api/v1/messages/**
+        - id: contact-service
+          uri: ${CONTACT_SERVICE_ROUTE:http://localhost:8082}
+          predicates:
+            - Path=/api/v1/contacts/**, /api/v1/contactlists/**
+      default-filters:
+        - name: CustomTokenRelay
+  security:
+    oauth2:
+      client:
+        registration:
+          azure:
+            client-id: ${AZURE_CLIENT_ID}
+            client-secret: ${AZURE_CLIENT_SECRET}
+            authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            scope: openid, profile, email, offline_access
+            provider: azure
+        provider:
+          azure:
+            issuer-uri: https://login.microsoftonline.com/${AZURE_TENANT_ID}/v2.0
+      resourceserver:
+        jwt:
+          issuer-uri: https://sts.windows.net/${AZURE_TENANT_ID}/
+
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.cloud.gateway: TRACE
