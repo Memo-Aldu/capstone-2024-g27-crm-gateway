@@ -38,7 +38,7 @@ spring:
         - id: contact-service
           uri: ${CONTACT_SERVICE_ROUTE:http://localhost:8082}
           predicates:
-            - Path=/api/v1/contacts/**, /api/v1/contactlists/**
+            - Path=/api/v1/contacts/**, /api/v1/contact_lists/**
       default-filters:
         - name: CustomTokenRelay
   security:
